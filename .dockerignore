@@ -1,0 +1,8 @@
+node_modules
+dist
+.astro
+.git
+docs
+*.log
+deploy.sh
+nginx/redmi-server.conf

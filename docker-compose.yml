@@ -1,0 +1,22 @@
+services:
+  # Desarrollo con recarga en caliente: http://localhost:4322
+  dev:
+    build:
+      context: .
+      target: dev
+    user: node # uid 1000, el mismo que el usuario del host: los archivos creados no quedan como root
+    init: true # reenvía Ctrl+C / docker stop al proceso para que pare al momento
+    ports:
+      - "4322:4322"
+    volumes:
+      - .:/app
+
+  # Versión de producción (nginx + estáticos), igual que lo que se desplegará:
+  #   docker compose up --build web   ->   http://localhost:8081
+  web:
+    build:
+      context: .
+      target: runtime
+    profiles: ["prod"]
+    ports:
+      - "8081:80"

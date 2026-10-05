@@ -1,0 +1,44 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import Logo from '../components/Logo.astro';
+---
+
+<BaseLayout lang="en" noindex>
+  <main id="main" class="nf">
+    <span class="logo"><Logo size={48} /></span>
+    <h1>404</h1>
+    <p>This page doesn’t exist. · Esta página no existe.</p>
+    <p class="links">
+      <a href="/">Nuclear for Android</a>
+      <a href="/es/" lang="es">Nuclear para Android</a>
+    </p>
+  </main>
+</BaseLayout>
+
+<style>
+  .nf {
+    min-height: 100vh;
+    display: grid;
+    place-content: center;
+    justify-items: center;
+    gap: 1rem;
+    padding: 1rem;
+    text-align: center;
+  }
+  .logo {
+    color: var(--accent);
+  }
+  h1 {
+    font-size: 4rem;
+    font-weight: 850;
+  }
+  p {
+    color: var(--muted);
+  }
+  .links {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 1.5rem;
+  }
+</style>

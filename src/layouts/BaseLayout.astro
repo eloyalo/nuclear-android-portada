@@ -1,0 +1,168 @@
+---
+import '../styles/global.css';
+import { getImage } from 'astro:assets';
+import { langs, ogLocales, paths, ui, type Lang } from '../i18n/ui';
+import { release, repo } from '../data/release';
+import { author } from '../data/author';
+import queue from '../assets/screenshots/queue.png';
+import album from '../assets/screenshots/album.png';
+import notification from '../assets/screenshots/notification.png';
+
+interface Props {
+  lang: Lang;
+  noindex?: boolean; // 404
+}
+
+const { lang, noindex = false } = Astro.props;
+const t = ui[lang];
+const base = Astro.site ?? Astro.url;
+const abs = (path: string) => new URL(path, base).href;
+
+const title = t.title;
+const description = t.description(release.apkSizeMb);
+const pageUrl = abs(paths[lang]);
+const ogImage = abs('/og.png');
+
+// Capturas para los datos estructurados (mismas imágenes optimizadas que en la página)
+const shots = await Promise.all(
+  [queue, album, notification].map((src) => getImage({ src, width: 540, format: 'webp' })),
+);
+
+// Datos estructurados: le dicen a Google que esto es una app, para qué sistema, gratis,
+// dónde se descarga, de qué proyecto viene y quién la hace
+const jsonLd = {
+  '@context': 'https://schema.org',
+  '@graph': [
+    {
+      '@type': 'WebSite',
+      '@id': abs('/#website'),
+      url: abs('/'),
+      name: 'Nuclear for Android',
+      alternateName: ['Nuclear para Android', 'Nuclear Android'],
+      inLanguage: langs,
+      publisher: { '@id': `${author.url}/#person` },
+    },
+    {
+      '@type': 'WebPage',
+      '@id': `${pageUrl}#webpage`,
+      url: pageUrl,
+      name: title,
+      description,
+      inLanguage: lang,
+      isPartOf: { '@id': abs('/#website') },
+      about: { '@id': abs('/#app') },
+      primaryImageOfPage: ogImage,
+    },
+    {
+      '@type': 'MobileApplication',
+      '@id': abs('/#app'),
+      name: lang === 'es' ? 'Nuclear para Android' : 'Nuclear for Android',
+      alternateName: ['Nuclear for Android', 'Nuclear para Android', 'Nuclear Music Player for Android'],
+      description,
+      url: pageUrl,
+      operatingSystem: 'Android 7.0+',
+      applicationCategory: 'MultimediaApplication',
+      applicationSubCategory: lang === 'es' ? 'Reproductor de música' : 'Music player',
+      softwareVersion: release.version,
+      dateModified: release.date,
+      fileSize: `${release.apkSizeMb} MB`,
+      downloadUrl: release.apkUrl,
+      installUrl: release.pageUrl,
+      screenshot: shots.map((s) => abs(s.src)),
+      image: ogImage,
+      isAccessibleForFree: true,
+      offers: { '@type': 'Offer', price: '0', priceCurrency: 'EUR' },
+      license: 'https://www.gnu.org/licenses/agpl-3.0.html',
+      isBasedOn: repo.upstream,
+      sameAs: [repo.url],
+      author: { '@id': `${author.url}/#person` },
+    },
+    {
+      '@type': 'SoftwareSourceCode',
+      '@id': abs('/#source'),
+      name: 'nuclear-android',
+      codeRepository: repo.url,
+      programmingLanguage: ['TypeScript', 'Rust', 'Kotlin'],
+      runtimePlatform: 'Android',
+      license: 'https://www.gnu.org/licenses/agpl-3.0.html',
+      isBasedOn: repo.upstream,
+      targetProduct: { '@id': abs('/#app') },
+      author: { '@id': `${author.url}/#person` },
+    },
+    {
+      '@type': 'Person',
+      '@id': `${author.url}/#person`,
+      name: author.name,
+      url: author.url,
+      sameAs: author.sameAs,
+    },
+    {
+      '@type': 'FAQPage',
+      '@id': `${pageUrl}#faq`,
+      inLanguage: lang,
+      mainEntity: t.faq.items.map((item) => ({
+        '@type': 'Question',
+        name: item.q,
+        acceptedAnswer: { '@type': 'Answer', text: item.a.replace(/<[^>]+>/g, '') },
+      })),
+    },
+  ],
+};
+---
+
+<!doctype html>
+<html lang={lang}>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>{title}</title>
+    <meta name="description" content={description} />
+    {noindex && <meta name="robots" content="noindex" />}
+    <meta name="theme-color" content="#0a0b0e" />
+    <meta name="color-scheme" content="dark" />
+    <meta name="author" content={author.name} />
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
+    <meta name="generator" content={Astro.generator} />
+
+    {
+      !noindex && (
+        <>
+          <link rel="canonical" href={pageUrl} />
+          {langs.map((l) => (
+            <link rel="alternate" hreflang={l} href={abs(paths[l])} />
+          ))}
+          <link rel="alternate" hreflang="x-default" href={abs(paths.en)} />
+        </>
+      )
+    }
+    <link rel="sitemap" href="/sitemap-index.xml" />
+
+    <!-- Open Graph / redes sociales -->
+    <meta property="og:type" content="website" />
+    <meta property="og:site_name" content="Nuclear for Android" />
+    <meta property="og:title" content={title} />
+    <meta property="og:description" content={description} />
+    <meta property="og:url" content={pageUrl} />
+    <meta property="og:image" content={ogImage} />
+    <meta property="og:image:width" content="1200" />
+    <meta property="og:image:height" content="630" />
+    <meta property="og:image:alt" content={t.shots.alt.queue} />
+    <meta property="og:locale" content={ogLocales[lang]} />
+    {
+      langs
+        .filter((l) => l !== lang)
+        .map((l) => <meta property="og:locale:alternate" content={ogLocales[l]} />)
+    }
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content={title} />
+    <meta name="twitter:description" content={description} />
+    <meta name="twitter:image" content={ogImage} />
+
+    {!noindex && <script type="application/ld+json" set:html={JSON.stringify(jsonLd)} />}
+  </head>
+  <body>
+    <a class="skip-link" href="#main">{t.skip}</a>
+    <slot />
+  </body>
+</html>

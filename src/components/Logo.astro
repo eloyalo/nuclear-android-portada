@@ -1,0 +1,15 @@
+---
+// Marca propia de la web (trébol + punto). No es el logo de Nuclear, a propósito.
+interface Props {
+  size?: number;
+}
+const { size = 28 } = Astro.props;
+---
+
+<svg width={size} height={size} viewBox="-12 -12 24 24" aria-hidden="true">
+  <path
+    fill="currentColor"
+    d="M-1.70 -2.94L-5.25 -9.09A10.5 10.5 0 0 1 5.25 -9.09L1.70 -2.94A3.4 3.4 0 0 0 -1.70 -2.94ZM3.40 0.00L10.50 0.00A10.5 10.5 0 0 1 5.25 9.09L1.70 2.94A3.4 3.4 0 0 0 3.40 0.00ZM-1.70 2.94L-5.25 9.09A10.5 10.5 0 0 1 -10.50 0.00L-3.40 0.00A3.4 3.4 0 0 0 -1.70 2.94Z"
+  ></path>
+  <circle r="2" fill="currentColor"></circle>
+</svg>

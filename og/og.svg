@@ -1,0 +1,53 @@
+<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="1200" height="630" viewBox="0 0 1200 630">
+  <!-- Imagen para redes (og:image). Regenerar: rsvg-convert og.svg -o ../public/og.png -->
+  <defs>
+    <radialGradient id="g1" cx="0.8" cy="0.35" r="0.55">
+      <stop offset="0" stop-color="#8b7bff" stop-opacity="0.35"/>
+      <stop offset="1" stop-color="#8b7bff" stop-opacity="0"/>
+    </radialGradient>
+    <radialGradient id="g2" cx="0.62" cy="0.85" r="0.45">
+      <stop offset="0" stop-color="#c4f54a" stop-opacity="0.22"/>
+      <stop offset="1" stop-color="#c4f54a" stop-opacity="0"/>
+    </radialGradient>
+    <linearGradient id="frame" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#2a2f39"/>
+      <stop offset="0.4" stop-color="#13161c"/>
+      <stop offset="1" stop-color="#0d0f13"/>
+    </linearGradient>
+    <clipPath id="screen"><rect x="12" y="12" width="276" height="613" rx="30"/></clipPath>
+    <clipPath id="screen2"><rect x="12" y="12" width="236" height="524" rx="26"/></clipPath>
+  </defs>
+  <rect width="1200" height="630" fill="#0a0b0e"/>
+  <rect width="1200" height="630" fill="url(#g1)"/>
+  <rect width="1200" height="630" fill="url(#g2)"/>
+
+  <!-- móvil de atrás -->
+  <g transform="translate(700 120) rotate(-7)" opacity="0.5">
+    <rect width="260" height="548" rx="34" fill="url(#frame)"/>
+    <image x="12" y="12" width="236" height="524" preserveAspectRatio="xMidYMin slice" clip-path="url(#screen2)" xlink:href="../src/assets/screenshots/album.png"/>
+  </g>
+  <!-- móvil principal -->
+  <g transform="translate(850 40) rotate(4)">
+    <rect width="300" height="637" rx="40" fill="url(#frame)" stroke="#ffffff" stroke-opacity="0.08"/>
+    <image x="12" y="12" width="276" height="613" preserveAspectRatio="xMidYMin slice" clip-path="url(#screen)" xlink:href="../src/assets/screenshots/queue.png"/>
+  </g>
+
+  <!-- marca -->
+  <g transform="translate(96 112) scale(1.45)" fill="#c4f54a">
+    <path d="M-1.70 -2.94L-5.25 -9.09A10.5 10.5 0 0 1 5.25 -9.09L1.70 -2.94A3.4 3.4 0 0 0 -1.70 -2.94ZM3.40 0.00L10.50 0.00A10.5 10.5 0 0 1 5.25 9.09L1.70 2.94A3.4 3.4 0 0 0 3.40 0.00ZM-1.70 2.94L-5.25 9.09A10.5 10.5 0 0 1 -10.50 0.00L-3.40 0.00A3.4 3.4 0 0 0 -1.70 2.94Z"/>
+    <circle r="2"/>
+  </g>
+  <text x="130" y="122" font-family="DejaVu Sans Mono" font-size="20" letter-spacing="2" fill="#c4f54a">UNOFFICIAL ANDROID PORT</text>
+
+  <text font-family="Noto Sans" font-weight="800" font-size="92" letter-spacing="-3" fill="#ffffff">
+    <tspan x="76" y="250">Nuclear</tspan>
+    <tspan x="76" y="345">for Android</tspan>
+  </text>
+  <text font-family="Noto Sans" font-size="30" fill="#c7ccd5">
+    <tspan x="80" y="420">Free, open-source music player.</tspan>
+    <tspan x="80" y="462">No ads, no tracking. ~23 MB APK.</tspan>
+  </text>
+
+  <rect x="78" y="512" width="390" height="54" rx="27" fill="#c4f54a"/>
+  <text x="273" y="547" text-anchor="middle" font-family="Noto Sans" font-weight="700" font-size="24" fill="#11160a">nuclear.eloyalonso.dev</text>
+</svg>

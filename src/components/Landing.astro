@@ -1,0 +1,1048 @@
+---
+// La portada completa. Se usa igual en / (inglés) y /es/ (español).
+import { Image } from 'astro:assets';
+import Phone from './Phone.astro';
+import Icon, { type IconName } from './Icon.astro';
+import Logo from './Logo.astro';
+import { langs, paths, ui, type Lang } from '../i18n/ui';
+import { release, repo } from '../data/release';
+import { author } from '../data/author';
+
+import queue from '../assets/screenshots/queue.png';
+import album from '../assets/screenshots/album.png';
+import notification from '../assets/screenshots/notification.png';
+import searchAlbums from '../assets/screenshots/search-albums.png';
+import searchArtists from '../assets/screenshots/search-artists.png';
+import menu from '../assets/screenshots/menu.png';
+import sources from '../assets/screenshots/sources.png';
+import settings from '../assets/screenshots/settings.png';
+import settingsMenu from '../assets/screenshots/settings-menu.png';
+
+interface Props {
+  lang: Lang;
+}
+
+const { lang } = Astro.props;
+const t = ui[lang];
+const other = langs.find((l) => l !== lang)!;
+
+const featureIcons: IconName[] = ['lock', 'target', 'badge', 'play', 'skip', 'phone', 'box', 'plug'];
+
+const gallery = [
+  { key: 'queue', src: queue },
+  { key: 'album', src: album },
+  { key: 'searchArtists', src: searchArtists },
+  { key: 'searchAlbums', src: searchAlbums },
+  { key: 'menu', src: menu },
+  { key: 'sources', src: sources },
+  { key: 'settingsMenu', src: settingsMenu },
+  { key: 'settings', src: settings },
+] as const;
+
+const releaseDate = new Date(release.date).toLocaleDateString(lang === 'es' ? 'es-ES' : 'en-GB', {
+  day: 'numeric',
+  month: 'short',
+  year: 'numeric',
+});
+---
+
+<header class="site-header">
+  <div class="container header-inner">
+    <a class="brand" href={paths[lang]} aria-label={t.hero.h1}>
+      <Logo size={26} />
+      <span>Nuclear <em>{lang === 'es' ? 'para Android' : 'for Android'}</em></span>
+    </a>
+    <nav aria-label="Main">
+      <ul class="nav-links">
+        <li><a href="#features">{t.nav.features}</a></li>
+        <li><a href="#screenshots">{t.nav.screenshots}</a></li>
+        <li><a href="#setup">{t.nav.setup}</a></li>
+        <li><a href="#faq">{t.nav.faq}</a></li>
+      </ul>
+    </nav>
+    <div class="header-actions">
+      <a class="lang-link" href={paths[other]} hreflang={other} lang={other}>
+        <Icon name="globe" size={16} />
+        {t.langName}
+      </a>
+      <a class="icon-link" href={repo.url} aria-label="GitHub">
+        <Icon name="github" size={20} />
+      </a>
+    </div>
+  </div>
+</header>
+
+<main id="main">
+  <!-- Portada -->
+  <section class="hero">
+    <div class="hero-glow" aria-hidden="true"></div>
+    <div class="container hero-grid">
+      <div class="hero-copy">
+        <p class="eyebrow">{t.hero.eyebrow}</p>
+        <h1>{t.hero.h1}</h1>
+        <p class="lead">{t.hero.lead}</p>
+        <div class="actions">
+          <a class="btn btn-primary" href={release.apkUrl}>
+            <Icon name="download" />
+            {t.hero.download}
+          </a>
+          <a class="btn btn-ghost" href={repo.url}>
+            <Icon name="github" />
+            {t.hero.github}
+          </a>
+        </div>
+        <p class="meta">
+          {t.hero.meta(release.version, release.apkSizeMb)} ·{' '}
+          <a href={release.pageUrl}><time datetime={release.date}>{releaseDate}</time></a>
+        </p>
+        <p class="unofficial" set:html={t.hero.unofficial} />
+      </div>
+
+      <div class="hero-visual">
+        <Phone src={album} alt={t.shots.alt.album} width={250} class="phone-back" />
+        <Phone src={queue} alt={t.shots.alt.queue} width={290} eager class="phone-front" />
+        <div class="notif">
+          <Image
+            src={notification}
+            alt={t.shots.alt.notification}
+            widths={[300, 540]}
+            sizes="300px"
+            format="webp"
+            quality={82}
+            loading="eager"
+          />
+        </div>
+      </div>
+    </div>
+
+    <div class="container">
+      <ul class="facts">
+        {
+          t.facts.map((fact) => (
+            <li>
+              <Icon name="check" size={16} />
+              {fact}
+            </li>
+          ))
+        }
+      </ul>
+    </div>
+  </section>
+
+  <!-- Funciones -->
+  <section class="section" id="features">
+    <div class="container">
+      <div class="section-head">
+        <h2>{t.features.h2}</h2>
+        <p>{t.features.intro}</p>
+      </div>
+      <ul class="features">
+        {
+          t.features.items.map((item, i) => (
+            <li class="feature">
+              <span class="feature-icon">
+                <Icon name={featureIcons[i]} size={22} />
+              </span>
+              <h3>{item.title}</h3>
+              <p set:html={item.body} />
+            </li>
+          ))
+        }
+      </ul>
+    </div>
+  </section>
+
+  <!-- Filtro de duración -->
+  <section class="section matching">
+    <div class="container matching-grid">
+      <div class="section-head">
+        <h2>{t.matching.h2}</h2>
+        <p>{t.matching.body}</p>
+      </div>
+      <figure class="compare">
+        <figcaption>{t.matching.example}</figcaption>
+        <div class="track">
+          <span>rare</span>
+          <span class="mono">1:35</span>
+        </div>
+        <div class="row bad">
+          <div class="label">
+            <Icon name="x" size={16} />
+            {t.matching.before}
+          </div>
+          <div class="bar" style="--len: 100%"><span class="mono">9:20</span></div>
+        </div>
+        <div class="row good">
+          <div class="label">
+            <Icon name="check" size={16} />
+            {t.matching.after}
+          </div>
+          <div class="bar" style={`--len: ${((95 / 560) * 100).toFixed(1)}%`}><span class="mono">1:35</span></div>
+        </div>
+      </figure>
+    </div>
+  </section>
+
+  <!-- Capturas -->
+  <section class="section" id="screenshots">
+    <div class="container">
+      <div class="section-head">
+        <h2>{t.shots.h2}</h2>
+        <p>{t.shots.intro}</p>
+      </div>
+    </div>
+    <div class="rail" tabindex="0" aria-label={t.shots.h2}>
+      {
+        gallery.map((shot) => (
+          <figure>
+            <Phone src={shot.src} alt={t.shots.alt[shot.key]} width={240} />
+            <figcaption>{t.shots.caption[shot.key]}</figcaption>
+          </figure>
+        ))
+      }
+    </div>
+  </section>
+
+  <!-- Instalación -->
+  <section class="section" id="setup">
+    <div class="container setup-grid">
+      <div>
+        <div class="section-head">
+          <h2>{t.setup.h2}</h2>
+          <p>{t.setup.intro}</p>
+        </div>
+        <ol class="steps">
+          {t.setup.steps.map((step) => <li set:html={step} />)}
+        </ol>
+        <p class="note">{t.setup.note}</p>
+        <a class="btn btn-primary" href={release.apkUrl}>
+          <Icon name="download" />
+          {t.hero.download} · {release.apkSizeMb} MB
+        </a>
+      </div>
+      <Phone src={sources} alt={t.shots.alt.sources} width={280} class="setup-phone" />
+    </div>
+  </section>
+
+  <!-- Compatibilidad y limitaciones -->
+  <section class="section" id="compat">
+    <div class="container compat-grid">
+      <div>
+        <h2>{t.compat.h2}</h2>
+        <p class="sub">{t.compat.intro}</p>
+        <dl class="specs">
+          {
+            t.compat.rows.map(([k, v]) => (
+              <div>
+                <dt>{k}</dt>
+                <dd set:html={v} />
+              </div>
+            ))
+          }
+        </dl>
+        <p class="tip" set:html={t.compat.tip} />
+      </div>
+      <div>
+        <h2>{t.limits.h2}</h2>
+        <ul class="limits">
+          {t.limits.items.map((item) => <li set:html={item} />)}
+        </ul>
+      </div>
+    </div>
+  </section>
+
+  <!-- Preguntas frecuentes -->
+  <section class="section" id="faq">
+    <div class="container faq-wrap">
+      <h2>{t.faq.h2}</h2>
+      <div class="faq">
+        {
+          t.faq.items.map((item, i) => (
+            <details open={i === 0}>
+              <summary>{item.q}</summary>
+              <p set:html={item.a} />
+            </details>
+          ))
+        }
+      </div>
+    </div>
+  </section>
+
+  <!-- Sobre el port -->
+  <section class="section about">
+    <div class="container about-grid">
+      <h2>{t.about.h2}</h2>
+      <div>
+        <p>{t.about.body}</p>
+        <p class="about-links">
+          <a href={repo.writeup}>{t.about.writeup} <Icon name="arrow" size={16} /></a>
+          <span>
+            {t.about.author} <a href={author.url}>{author.name}</a>
+          </span>
+        </p>
+      </div>
+    </div>
+  </section>
+
+  <!-- Llamada final -->
+  <section class="cta">
+    <div class="container cta-inner">
+      <Logo size={44} />
+      <h2>{t.cta.h2}</h2>
+      <p>{t.cta.body}</p>
+      <div class="actions">
+        <a class="btn btn-primary" href={release.apkUrl}>
+          <Icon name="download" />
+          {t.hero.download}
+        </a>
+        <a class="btn btn-ghost" href={repo.issues}>
+          <Icon name="github" />
+          Issues
+        </a>
+      </div>
+    </div>
+  </section>
+</main>
+
+<footer class="site-footer">
+  <div class="container footer-inner">
+    <p set:html={t.footer.credits} />
+    <p>
+      {t.footer.license}
+      {t.footer.madeBy} <a href={author.url}>{author.name}</a> ·
+      <a href={repo.url}>GitHub</a> ·
+      <a href={paths[other]} hreflang={other} lang={other}>{t.langName}</a>
+    </p>
+  </div>
+</footer>
+
+<style>
+  /* Cabecera */
+  .site-header {
+    position: sticky;
+    top: 0;
+    z-index: 50;
+    background: rgb(10 11 14 / 0.72);
+    backdrop-filter: blur(14px) saturate(140%);
+    border-bottom: 1px solid rgb(255 255 255 / 0.06);
+  }
+
+  .header-inner {
+    display: flex;
+    align-items: center;
+    gap: 1.5rem;
+    min-height: 4rem;
+  }
+
+  .brand {
+    white-space: nowrap;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.6rem;
+    color: var(--accent);
+    text-decoration: none;
+    font-weight: 800;
+    letter-spacing: -0.02em;
+  }
+
+  .brand span {
+    color: var(--text);
+  }
+
+  .brand em {
+    font-style: normal;
+    font-weight: 500;
+    color: var(--muted);
+  }
+
+  nav {
+    margin-left: auto;
+  }
+
+  .nav-links {
+    display: none;
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    gap: 1.75rem;
+  }
+
+  .nav-links a,
+  .lang-link {
+    color: var(--muted);
+    text-decoration: none;
+    font-size: 0.9375rem;
+  }
+
+  .nav-links a:hover,
+  .lang-link:hover,
+  .icon-link:hover {
+    color: var(--text);
+  }
+
+  .header-actions {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+  }
+
+  .lang-link {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.35rem;
+  }
+
+  .icon-link {
+    color: var(--muted);
+    display: inline-flex;
+    padding: 0.25rem;
+  }
+
+  @media (min-width: 52rem) {
+    .nav-links {
+      display: flex;
+    }
+    .header-actions {
+      margin-left: 0.5rem;
+    }
+  }
+
+  /* Portada */
+  .hero {
+    position: relative;
+    padding-top: clamp(2.5rem, 1rem + 5vw, 5rem);
+    padding-bottom: 3rem;
+    overflow: hidden;
+    isolation: isolate;
+  }
+
+  .hero-glow {
+    position: absolute;
+    inset: -20% -10% auto;
+    height: 120%;
+    z-index: -1;
+    background:
+      radial-gradient(40rem 26rem at 78% 30%, rgb(139 123 255 / 0.22), transparent 70%),
+      radial-gradient(34rem 24rem at 62% 70%, rgb(196 245 74 / 0.14), transparent 70%),
+      radial-gradient(30rem 20rem at 10% 10%, rgb(196 245 74 / 0.06), transparent 70%);
+  }
+
+  .hero-glow::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background-image: radial-gradient(rgb(255 255 255 / 0.06) 1px, transparent 1px);
+    background-size: 22px 22px;
+    mask-image: linear-gradient(to bottom, #000 30%, transparent 85%);
+  }
+
+  .hero-grid {
+    display: grid;
+    gap: 3.5rem;
+    align-items: center;
+  }
+
+  .hero-copy {
+    display: grid;
+    gap: 1.25rem;
+    max-width: 36rem;
+  }
+
+  h1 {
+    font-size: clamp(2.75rem, 1.6rem + 5.2vw, 5.25rem);
+    font-weight: 850;
+    letter-spacing: -0.045em;
+    line-height: 0.98;
+    background: linear-gradient(180deg, #fff 30%, #b9bfca);
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+  }
+
+  .lead {
+    font-size: clamp(1.125rem, 1rem + 0.5vw, 1.3rem);
+    color: #c7ccd5;
+  }
+
+  .actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.75rem;
+    margin-top: 0.5rem;
+  }
+
+  .meta {
+    font-family: var(--font-mono);
+    font-size: 0.8125rem;
+    color: var(--muted);
+  }
+
+  .meta a {
+    color: var(--muted);
+  }
+
+  .unofficial {
+    font-size: 0.9375rem;
+    color: var(--muted);
+    border-left: 2px solid var(--accent-2);
+    padding-left: 0.85rem;
+  }
+
+  .unofficial :global(a) {
+    color: var(--text);
+  }
+
+  .hero-visual {
+    position: relative;
+    display: flex;
+    justify-content: center;
+    min-height: 34rem;
+  }
+
+  .hero-visual :global(.phone-front) {
+    position: relative;
+    z-index: 2;
+    transform: translateX(8%) rotate(2deg);
+    animation: float 7s ease-in-out infinite;
+  }
+
+  .hero-visual :global(.phone-back) {
+    position: absolute;
+    top: 2.5rem;
+    left: 50%;
+    z-index: 1;
+    transform: translateX(-95%) rotate(-7deg);
+    opacity: 0.55;
+    filter: saturate(0.8);
+  }
+
+  .notif {
+    position: absolute;
+    z-index: 3;
+    bottom: 1.5rem;
+    left: 50%;
+    width: min(300px, 80%);
+    transform: translateX(-88%) rotate(-2deg);
+    border-radius: 1.1rem;
+    overflow: hidden;
+    box-shadow:
+      0 0 0 1px rgb(255 255 255 / 0.1),
+      0 24px 50px -12px rgb(0 0 0 / 0.85);
+    animation: float 7s ease-in-out -3.5s infinite;
+  }
+
+  @keyframes float {
+    50% {
+      translate: 0 -10px;
+    }
+  }
+
+  /* En pantallas estrechas: solo el móvil principal y la notificación centrada debajo */
+  @media (max-width: 40rem) {
+    .hero-visual {
+      min-height: 0;
+      padding-bottom: 4.5rem;
+    }
+    .hero-visual :global(.phone-back) {
+      display: none;
+    }
+    .hero-visual :global(.phone-front) {
+      transform: rotate(2deg);
+    }
+    .notif {
+      bottom: 0;
+      width: min(280px, 82%);
+      transform: translateX(-50%) rotate(-2deg);
+    }
+  }
+
+  @media (min-width: 60rem) {
+    .hero-grid {
+      grid-template-columns: 1.05fr 1fr;
+    }
+    .hero-visual {
+      min-height: 40rem;
+    }
+  }
+
+  .facts {
+    list-style: none;
+    margin: 3.5rem 0 0;
+    padding: 1.1rem 0 0;
+    border-top: 1px solid var(--border);
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.6rem 1.75rem;
+    color: var(--muted);
+    font-size: 0.9375rem;
+  }
+
+  .facts li {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4rem;
+  }
+
+  .facts :global(svg) {
+    color: var(--accent);
+  }
+
+  /* Funciones */
+  .features {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: grid;
+    gap: 1px;
+    grid-template-columns: repeat(auto-fill, minmax(min(16rem, 100%), 1fr));
+    background: var(--border);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    overflow: hidden;
+  }
+
+  .feature {
+    background: var(--bg-2);
+    padding: 1.75rem 1.5rem;
+    display: grid;
+    gap: 0.6rem;
+    align-content: start;
+    transition: background-color 0.2s ease;
+  }
+
+  .feature:hover {
+    background: var(--surface);
+  }
+
+  .feature p {
+    color: var(--muted);
+    font-size: 0.975rem;
+  }
+
+  .feature-icon {
+    display: inline-grid;
+    place-items: center;
+    width: 2.6rem;
+    height: 2.6rem;
+    border-radius: 0.75rem;
+    color: var(--accent);
+    background: rgb(196 245 74 / 0.08);
+    border: 1px solid rgb(196 245 74 / 0.18);
+    margin-bottom: 0.4rem;
+  }
+
+  /* Filtro de duración */
+  .matching {
+    background: linear-gradient(180deg, transparent, var(--bg-2) 20%, var(--bg-2) 80%, transparent);
+  }
+
+  .matching-grid {
+    display: grid;
+    gap: 2rem;
+    align-items: center;
+  }
+
+  .matching .section-head {
+    margin-bottom: 0;
+  }
+
+  @media (min-width: 60rem) {
+    .matching-grid {
+      grid-template-columns: 1fr 1fr;
+      gap: 4rem;
+    }
+  }
+
+  .compare {
+    margin: 0;
+    padding: 1.75rem;
+    border-radius: var(--radius);
+    background: var(--surface);
+    border: 1px solid var(--border);
+    display: grid;
+    gap: 1.25rem;
+  }
+
+  .compare figcaption {
+    color: var(--muted);
+    font-size: 0.9375rem;
+  }
+
+  .track {
+    display: flex;
+    justify-content: space-between;
+    font-weight: 700;
+    font-size: 1.25rem;
+    padding-bottom: 1rem;
+    border-bottom: 1px dashed var(--border);
+  }
+
+  .mono {
+    font-family: var(--font-mono);
+    font-weight: 600;
+  }
+
+  .row {
+    display: grid;
+    gap: 0.5rem;
+  }
+
+  .label {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.45rem;
+    font-size: 0.9375rem;
+  }
+
+  .bar {
+    width: var(--len);
+    min-width: 4.5rem;
+    height: 2.25rem;
+    border-radius: 0.6rem;
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    padding-inline: 0.75rem;
+    font-size: 0.875rem;
+  }
+
+  .bad .label {
+    color: var(--bad);
+  }
+
+  .bad .bar {
+    background: repeating-linear-gradient(-45deg, rgb(255 122 122 / 0.16) 0 8px, rgb(255 122 122 / 0.08) 8px 16px);
+    border: 1px solid rgb(255 122 122 / 0.35);
+    color: var(--bad);
+    text-decoration: line-through;
+  }
+
+  .good .label {
+    color: var(--accent);
+  }
+
+  .good .bar {
+    background: var(--accent);
+    color: var(--accent-ink);
+  }
+
+  /* Capturas */
+  .rail {
+    display: flex;
+    gap: 1.75rem;
+    overflow-x: auto;
+    scroll-snap-type: x mandatory;
+    padding: 0.5rem max(1rem, calc((100vw - var(--max-width)) / 2 + 1.5rem)) 2rem;
+    scrollbar-width: thin;
+    scrollbar-color: var(--border) transparent;
+  }
+
+  .rail figure {
+    margin: 0;
+    flex: none;
+    scroll-snap-align: center;
+    display: grid;
+    gap: 0.9rem;
+    justify-items: center;
+  }
+
+  .rail figcaption {
+    color: var(--muted);
+    font-size: 0.9375rem;
+  }
+
+  /* Instalación */
+  .setup-grid {
+    display: grid;
+    gap: 3rem;
+    align-items: center;
+  }
+
+  .setup-grid :global(.setup-phone) {
+    justify-self: center;
+  }
+
+  @media (min-width: 60rem) {
+    .setup-grid {
+      grid-template-columns: 1.4fr 1fr;
+    }
+  }
+
+  .steps {
+    list-style: none;
+    counter-reset: step;
+    margin: 0 0 1.5rem;
+    padding: 0;
+    display: grid;
+    gap: 1.1rem;
+  }
+
+  .steps li {
+    counter-increment: step;
+    position: relative;
+    padding-left: 3.25rem;
+    min-height: 2.25rem;
+  }
+
+  .steps li::before {
+    content: counter(step);
+    position: absolute;
+    left: 0;
+    top: -0.1rem;
+    width: 2.25rem;
+    height: 2.25rem;
+    display: grid;
+    place-items: center;
+    border-radius: 50%;
+    font-family: var(--font-mono);
+    font-weight: 700;
+    color: var(--accent);
+    border: 1px solid rgb(196 245 74 / 0.35);
+    background: rgb(196 245 74 / 0.06);
+  }
+
+  .note {
+    color: var(--muted);
+    font-size: 0.9375rem;
+    margin-bottom: 1.75rem;
+  }
+
+  /* Compatibilidad */
+  .compat-grid {
+    display: grid;
+    gap: 3.5rem;
+  }
+
+  .compat-grid h2 {
+    font-size: clamp(1.6rem, 1.2rem + 1.6vw, 2.25rem);
+    margin-bottom: 1rem;
+  }
+
+  @media (min-width: 60rem) {
+    .compat-grid {
+      grid-template-columns: 1.25fr 1fr;
+      gap: 4rem;
+    }
+  }
+
+  .sub {
+    color: var(--muted);
+    margin-bottom: 1.5rem;
+  }
+
+  .specs {
+    margin: 0;
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    overflow: hidden;
+  }
+
+  .specs div {
+    display: grid;
+    gap: 0.15rem 1rem;
+    padding: 0.85rem 1.1rem;
+    border-top: 1px solid var(--border);
+  }
+
+  .specs div:first-child {
+    border-top: 0;
+  }
+
+  .specs div:nth-child(odd) {
+    background: var(--bg-2);
+  }
+
+  @media (min-width: 36rem) {
+    .specs div {
+      grid-template-columns: 11rem 1fr;
+    }
+  }
+
+  .specs dt {
+    color: var(--muted);
+    font-size: 0.9375rem;
+  }
+
+  .specs dd {
+    margin: 0;
+  }
+
+  .tip {
+    margin-top: 1.25rem;
+    padding: 1rem 1.1rem;
+    border-radius: 0.75rem;
+    background: rgb(139 123 255 / 0.08);
+    border: 1px solid rgb(139 123 255 / 0.25);
+    font-size: 0.9375rem;
+  }
+
+  .limits {
+    margin: 0;
+    padding: 0;
+    list-style: none;
+    display: grid;
+    gap: 1rem;
+  }
+
+  .limits li {
+    padding-left: 1.25rem;
+    position: relative;
+    color: #c7ccd5;
+  }
+
+  .limits li::before {
+    content: '';
+    position: absolute;
+    left: 0;
+    top: 0.7em;
+    width: 0.45rem;
+    height: 0.45rem;
+    border-radius: 50%;
+    background: var(--faint);
+  }
+
+  /* Preguntas frecuentes */
+  .faq-wrap {
+    display: grid;
+    gap: 2.5rem;
+  }
+
+  @media (min-width: 60rem) {
+    .faq-wrap {
+      grid-template-columns: 1fr 2fr;
+      gap: 4rem;
+      align-items: start;
+    }
+    .faq-wrap h2 {
+      position: sticky;
+      top: 6rem;
+    }
+  }
+
+  .faq {
+    border-top: 1px solid var(--border);
+  }
+
+  details {
+    border-bottom: 1px solid var(--border);
+  }
+
+  summary {
+    cursor: pointer;
+    list-style: none;
+    padding: 1.25rem 2.5rem 1.25rem 0;
+    font-weight: 650;
+    font-size: 1.0625rem;
+    position: relative;
+  }
+
+  summary::-webkit-details-marker {
+    display: none;
+  }
+
+  summary::after {
+    content: '+';
+    position: absolute;
+    right: 0.25rem;
+    top: 50%;
+    translate: 0 -50%;
+    font-family: var(--font-mono);
+    font-size: 1.4rem;
+    font-weight: 400;
+    color: var(--accent);
+    transition: rotate 0.2s ease;
+  }
+
+  details[open] summary::after {
+    rotate: 45deg;
+  }
+
+  details p {
+    color: var(--muted);
+    padding-bottom: 1.4rem;
+    max-width: 44rem;
+  }
+
+  /* Sobre el port */
+  .about-grid {
+    display: grid;
+    gap: 1.5rem;
+  }
+
+  .about-grid p {
+    color: #c7ccd5;
+    max-width: 46rem;
+  }
+
+  @media (min-width: 60rem) {
+    .about-grid {
+      grid-template-columns: 1fr 2fr;
+      gap: 4rem;
+    }
+  }
+
+  .about-links {
+    margin-top: 1.25rem;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.75rem 2rem;
+    font-size: 0.9375rem;
+  }
+
+  .about-links a {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.35rem;
+  }
+
+  .about-links span {
+    color: var(--muted);
+  }
+
+  /* Llamada final */
+  .cta {
+    padding-block: clamp(4rem, 3rem + 4vw, 6.5rem);
+    background:
+      radial-gradient(36rem 18rem at 50% 100%, rgb(196 245 74 / 0.12), transparent 70%),
+      var(--bg-2);
+    border-top: 1px solid var(--border);
+  }
+
+  .cta-inner {
+    display: grid;
+    justify-items: center;
+    text-align: center;
+    gap: 1rem;
+    color: var(--accent);
+  }
+
+  .cta h2 {
+    color: var(--text);
+  }
+
+  .cta p {
+    color: var(--muted);
+    font-size: 1.125rem;
+  }
+
+  .cta .actions {
+    justify-content: center;
+  }
+
+  /* Pie */
+  .site-footer {
+    border-top: 1px solid var(--border);
+    padding-block: 2rem 2.5rem;
+    font-size: 0.875rem;
+    color: var(--faint);
+  }
+
+  .footer-inner {
+    display: grid;
+    gap: 0.5rem;
+  }
+
+  .site-footer a {
+    color: var(--muted);
+  }
+</style>

@@ -1,0 +1,19 @@
+# Notas privadas, no se publican
+docs
+
+# Dependencias y salida de compilación
+node_modules/
+dist/
+.astro/
+
+# Entorno
+.env
+.env.*
+
+# Sistema / editor
+.DS_Store
+*.log
+
+# Despliegue y configuración del servidor (no se publican)
+deploy.sh
+nginx/redmi-server.conf
