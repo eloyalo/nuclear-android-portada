@@ -14,6 +14,9 @@ FROM base AS build
 COPY package.json package-lock.json ./
 RUN npm ci --no-audit --no-fund
 COPY . .
+# La compilación consulta la última release en GitHub (src/data/release.ts). Pasar su tag
+# (--build-arg RELEASE_TAG=...) invalida la caché de este paso cuando sale una release nueva
+ARG RELEASE_TAG
 RUN npm run build
 
 # --- Producción: nginx sirviendo los estáticos ---
